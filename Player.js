@@ -7,6 +7,7 @@ class Player{
 		this.width = width;
 		this.height = height;
 		this.direction = Directions.DOWN;
+		this.money = 200000;
 		//this.img = spriteManager.player;
 	}
 	move(keys){
