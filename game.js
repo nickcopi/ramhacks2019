@@ -14,7 +14,7 @@ class Scene{
 		this.roads = [];
 		this.enemies = [];
 		this.menu;
-		this.houses = [new House(20,20,40,40,420,'Cool road',123), new House(600,600,40,40,4200,'Extra cool road',124515)];
+		this.houses = [];
 		this.time = 0;
 		this.player = new Player(250,250,40,40);
 		this.ctx = canvas.getContext('2d');
@@ -33,8 +33,6 @@ class Scene{
 	render(){
 		let {ctx,canvas,player} = this;
 		ctx.clearRect(0,0,canvas.width,canvas.height);
-		ctx.fillStyle = 'black';
-		ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
 		ctx.fillStyle = 'orange';
 		this.houses.forEach(house=>{
 			let adjusted = this.cameraOffset(house);
@@ -52,6 +50,8 @@ class Scene{
 			let adjusted = this.cameraOffset(enemy);
 			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,enemy.width,enemy.height);
 		});
+		ctx.fillStyle = 'black';
+		ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
 		if(this.menu){
 			ctx.globalAlpha = 0.5;
 			ctx.fillStyle = 'black';
@@ -124,7 +124,7 @@ class Scene{
 		}
 	}
 	generateMap(){
-		//let data = this.queryHouses();
+		let data = this.queryHouses();
 		for(let i = 0; i < 20;i++){
 			this.enemies.push(new Enemy());
 		}
@@ -143,21 +143,52 @@ class Scene{
 		let data = await fetch(endpoint).catch(e=>console.error(e));
 		let json = await data.json();
 		//console.log(json[1]);
-		//let streetNames = ['Meat Street', 'Feet Street', 'Abode Road','Pain Lane','Bike Turnpike','Hurt Court'];
+		json = json.slice(0,20);
+		let streetNames = json.map(m=>m.streetName);
 		streetNames.forEach(streetName=>{
 			let street;
 			do{
 				let horizontal = Math.random() > 0.5;
 				console.log(horizontal);
 				if(horizontal){
-					console.log('horizontal' + horizontal);
+					street = new Road(0,Math.floor(Math.random()*Scene.height),Scene.width,40,streetName,true);
+				} else {
+					street = new Road(Math.floor(Math.random()*Scene.width),0,40,Scene.height,streetName,false);
+				}
+			} while(this.roads.find(road=>{
+				let tempRoad;
+				if(street.horizontal){
+					tempRoad = new Road(street.x,street.y-100,street.width,street.height+200,street.name,street.horizontal);
+				} else {
+					tempRoad = new Road(street.x-100,street.y,street.width+200,street.height,street.name,street.horizontal);
+				}
+				return road.horizontal === street.horizontal && this.collide(road,tempRoad);
+			}));
+			this.roads.push(street);
+			/*while(true){
+				let street;
+				let horizontal = Math.random() > 0.5;
+				if(horizontal){
+					console.log('horizontal ' + horizontal);
 					street = new Road(0,Math.floor(Math.random()*Scene.height),Scene.width,40);
 				} else {
 					console.log('vertical ' + horizontal);
 					street = new Road(Math.floor(Math.random()*Scene.width),0,40,Scene.height);
 				}
-			} while(this.roads.find(road=>this.collide(road,street)));
-			this.roads.push(street);
+				if(!this.roads.find(road=>this.collide(road,street))){
+					this.roads.push(street);
+					break;
+				}
+			}*/
+		});
+		json.forEach(entry=>{
+			let house;
+			do{
+				house = new House(Math.floor(Math.random()*Scene.width),Math.floor(Math.random()*Scene.height),100,100,entry.median_house_value,entry.streetName,entry.streetNumber);
+				
+			} while(this.roads.find(road=>this.collide(road,house)));
+			this.houses.push(house);
+			
 		});
 		return [
 
@@ -190,12 +221,13 @@ const Directions = {
 
 
 class Road{
-	constructor(x,y,width,height,name){
+	constructor(x,y,width,height,name,horizontal){
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.name = name;
+		this.horizontal = horizontal;
 	}
 
 }
