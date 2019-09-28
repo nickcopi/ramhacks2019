@@ -12,6 +12,7 @@ class Scene{
 		this.canvas = canvas;
 		this.keys = [];
 		this.roads = [];
+		this.enemies = [];
 		this.menu;
 		this.houses = [new House(20,20,40,40,420,'Cool road',123), new House(600,600,40,40,4200,'Extra cool road',124515)];
 		this.time = 0;
@@ -46,6 +47,11 @@ class Scene{
 		});
 		ctx.font = '20px Arial';
 		ctx.fillText(`Money: $${player.money}`,1120,30);
+		ctx.fillStyle = 'green';
+		this.enemies.forEach(enemy=>{
+			let adjusted = this.cameraOffset(enemy);
+			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,enemy.width,enemy.height);
+		});
 		if(this.menu){
 			ctx.globalAlpha = 0.5;
 			ctx.fillStyle = 'black';
@@ -81,6 +87,9 @@ class Scene{
 			this.player.move(this.keys,this.time);
 			this.doInteract();
 			this.time++;
+			this.enemies.forEach(enemy=>{
+				enemy.move();
+			});
 		} else {
 			this.menu.doInteract(this.keys,this);
 		}
@@ -114,7 +123,10 @@ class Scene{
 		}
 	}
 	generateMap(){
-		let data = this.queryHouses();
+		//let data = this.queryHouses();
+		for(let i = 0; i < 15;i++){
+			this.enemies.push(new Enemy());
+		}
 	}
 	async queryHouses(){
 		/*This will fetch() from our endpoint. For now, we return mock data :S*/
