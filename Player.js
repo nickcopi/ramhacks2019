@@ -43,6 +43,9 @@ class Player{
 				this.direction = Directions.RIGHT;
 			}
 		});
+		if(this.x < 0) this.x = 0;
+		if(this.y < 0) this.y = 0;
+		
 
 	}
 

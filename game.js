@@ -1,4 +1,5 @@
 let game;
+const endpoint = '/getAllHouses';
 class Game{
 	constructor(canvas){
 		this.scene = new Scene(canvas);
@@ -10,7 +11,7 @@ class Scene{
 		this.keys = [];
 		this.roads = [];
 		this.menu;
-		this.houses = [new House(20,20,40,40), new House(600,600,40,40)];
+		this.houses = [new House(20,20,40,40,420,'Cool road',123), new House(600,600,40,40,4200,'Extra cool road',124515)];
 		this.tick = 0;
 		this.player = new Player(250,250,40,40);
 		this.ctx = canvas.getContext('2d');
@@ -30,7 +31,7 @@ class Scene{
 		let {ctx,canvas,player} = this;
 		ctx.clearRect(0,0,canvas.width,canvas.height);
 		ctx.fillStyle = 'black';
-		ctx.fillRect(canvas.width/2-player.width/2,canvas.height/2-player.height/2,player.width,player.height);
+		ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
 		ctx.fillStyle = 'orange';
 		this.houses.forEach(house=>{
 			let adjusted = this.cameraOffset(house);
@@ -42,13 +43,41 @@ class Scene{
 		});
 		ctx.font = '20px Arial';
 		ctx.fillText(`Money: $${player.money}`,1120,30);
+		if(this.menu){
+			ctx.globalAlpha = 0.5;
+			ctx.fillStyle = 'black';
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.globalAlpha = 1;
+			ctx.fillStyle = this.menu.color;
+			ctx.fillRect(Menu.xOffset,Menu.yOffset,canvas.width-2*Menu.xOffset,canvas.height-2*Menu.yOffset);
+			ctx.font = '40px Arial';
+			ctx.fillStyle = 'white';
+			this.drawCenteredText(this.menu.text,ctx,50);
+			ctx.font = '20px Arial';
+			if(this.menu.house.owned){
+				this.drawCenteredText(`[S] Sell house for $${this.menu.house.cost}?`,ctx,100);
+			}
+			else{
+				this.drawCenteredText(`[B] Buy house for $${this.menu.house.cost}?`,ctx,100);
+			}
+			this.drawCenteredText(`[Q] Exit Menu`,ctx,130);
+		}
+	}
+	drawCenteredText(text,ctx,y){
+		let x = Menu.xOffset + (this.canvas.width - Menu.xOffset*2)/2 - ctx.measureText(text).width/2
+		ctx.fillText(text,x,Menu.yOffset+y);
+		//console.log(text,x,respect.y+100);
+
+		
+		
+		
 	}
 	update(){
 		if(!this.menu){
 			this.player.move(this.keys);
 			this.doInteract();
 		} else {
-			this.menu.doInteract(this.keys);
+			this.menu.doInteract(this.keys,this);
 		}
 		this.tick++;
 	}
@@ -65,7 +94,7 @@ class Scene{
 		if(!interact) return;
 		const house = this.houses.find(house=>this.collide(this.player,house));
 		if(!house) return;
-		this.menu = new Menu(house.address + house.street,`Cool test house data oh yeah I love houses`,'red',house.img);
+		this.menu = new Menu(house.address + ' ' + house.street,`Cool test house data oh yeah I love houses`,'#654321',house);
 	}
 	cameraOffset(obj){
 		let canvas = this.canvas;
@@ -78,16 +107,23 @@ class Scene{
 		return{
 			x:adjustedX,
 			y:adjustedY
-		};
+		}
 	}
 	generateMap(){
 		let data = this.queryHouses();
 	}
-	queryHouses(){
+	async queryHouses(){
 		/*This will fetch() from our endpoint. For now, we return mock data :S*/
+		let data = await fetch(endpoint).catch(e=>console.error(e));
+		let json = await data.json();
+		//console.log(json[1]);
+		
 		return [
 
 		]
+	}
+	generatePrice(area,height,stories,year){
+
 	}
 
 }
@@ -97,7 +133,11 @@ const Keys = {
 	DOWN:[83,40],
 	LEFT:[65,37],
 	RIGHT:[68,39],
-	INTERACT:[69,32]
+	INTERACT:[69,32],
+	QUIT:[81,27],
+	BUY:[66],
+	SELL:[83],
+	FIX:[70]
 }
 
 const Directions = {
