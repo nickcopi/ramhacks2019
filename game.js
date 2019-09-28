@@ -9,6 +9,7 @@ class Scene{
 		this.canvas = canvas;
 		this.keys = [];
 		this.roads = [];
+		this.menu;
 		this.houses = [new House(20,20,40,40), new House(600,600,40,40)];
 		this.tick = 0;
 		this.player = new Player(250,250,40,40);
@@ -43,8 +44,12 @@ class Scene{
 		ctx.fillText(`Money: $${player.money}`,1120,30);
 	}
 	update(){
-		this.player.move(this.keys);
-		this.doInteract();
+		if(!this.menu){
+			this.player.move(this.keys);
+			this.doInteract();
+		} else {
+			this.menu.doInteract(this.keys);
+		}
 		this.tick++;
 	}
 	collide(o1,o2){
@@ -60,9 +65,7 @@ class Scene{
 		if(!interact) return;
 		const house = this.houses.find(house=>this.collide(this.player,house));
 		if(!house) return;
-		console.log(house);
-		
-		
+		this.menu = new Menu(house.address + house.street,`Cool test house data oh yeah I love houses`,'red',house.img);
 	}
 	cameraOffset(obj){
 		let canvas = this.canvas;
@@ -116,16 +119,6 @@ class Road{
 
 }
 
-class House{
-	constructor(x,y,width,height){
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.cost;
-		this.img;
-	}
-}
 
 
 
