@@ -66,10 +66,10 @@ class Scene{
 			this.drawCenteredText(this.menu.text,ctx,50);
 			ctx.font = '20px Arial';
 			if(this.menu.house.owned){
-				this.drawCenteredText(`[S] Sell house for $${this.menu.house.getCost()}?`,ctx,100);
+				this.drawCenteredText(`[S] Sell house for $${this.menu.house.getCost(this.time)}?`,ctx,100);
 			}
 			else{
-				this.drawCenteredText(`[B] Buy house for $${this.menu.house.getCost()}?`,ctx,100);
+				this.drawCenteredText(`[B] Buy house for $${this.menu.house.getCost(this.time)}?`,ctx,100);
 			}
 			this.drawCenteredText(`[Q] Exit Menu`,ctx,130);
 		}
