@@ -8,9 +8,13 @@ class Player{
 		this.height = height;
 		this.direction = Directions.DOWN;
 		this.money = 200000;
+		this.slimeTime = 0;
 		//this.img = spriteManager.player;
 	}
-	move(keys){
+	getSpeed(time){
+		return this.slimeTime < time?this.speed:this.speed/2;
+	}
+	move(keys,time){
 		let found = false;
 		Keys.UP.forEach(k=>{
 			if(keys[k] && !found){

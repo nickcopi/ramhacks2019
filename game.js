@@ -6,13 +6,15 @@ class Game{
 	}
 }
 class Scene{
+	static width = 4000;
+	static height = 3000;
 	constructor(canvas){
 		this.canvas = canvas;
 		this.keys = [];
 		this.roads = [];
 		this.menu;
 		this.houses = [new House(20,20,40,40,420,'Cool road',123), new House(600,600,40,40,4200,'Extra cool road',124515)];
-		this.tick = 0;
+		this.time = 0;
 		this.player = new Player(250,250,40,40);
 		this.ctx = canvas.getContext('2d');
 		window.addEventListener('keydown',e=>{
@@ -25,7 +27,7 @@ class Scene{
 		this.interval = setInterval(()=>{
 			this.update();
 			this.render();
-		});
+		},1000/60);
 	}
 	render(){
 		let {ctx,canvas,player} = this;
@@ -37,6 +39,7 @@ class Scene{
 			let adjusted = this.cameraOffset(house);
 			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,house.width,house.height);
 		});
+		ctx.fillStyle = '#654321';
 		this.roads.forEach(road=>{
 			let adjusted = this.cameraOffset(road);
 			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,road.width,road.height);
@@ -55,14 +58,15 @@ class Scene{
 			this.drawCenteredText(this.menu.text,ctx,50);
 			ctx.font = '20px Arial';
 			if(this.menu.house.owned){
-				this.drawCenteredText(`[S] Sell house for $${this.menu.house.cost}?`,ctx,100);
+				this.drawCenteredText(`[S] Sell house for $${this.menu.house.getCost()}?`,ctx,100);
 			}
 			else{
-				this.drawCenteredText(`[B] Buy house for $${this.menu.house.cost}?`,ctx,100);
+				this.drawCenteredText(`[B] Buy house for $${this.menu.house.getCost()}?`,ctx,100);
 			}
 			this.drawCenteredText(`[Q] Exit Menu`,ctx,130);
 		}
 	}
+	getYear = this.time % 60;
 	drawCenteredText(text,ctx,y){
 		let x = Menu.xOffset + (this.canvas.width - Menu.xOffset*2)/2 - ctx.measureText(text).width/2
 		ctx.fillText(text,x,Menu.yOffset+y);
@@ -74,12 +78,12 @@ class Scene{
 	}
 	update(){
 		if(!this.menu){
-			this.player.move(this.keys);
+			this.player.move(this.keys,this.time);
 			this.doInteract();
+			this.time++;
 		} else {
 			this.menu.doInteract(this.keys,this);
 		}
-		this.tick++;
 	}
 	collide(o1,o2){
 		return (o1.x < o2.x + o2.width && o1.x + o1.width > o2.x && o1.y < o2.y + o2.height && o1.y + o1.height > o2.y) && o1 !== o2;
@@ -117,7 +121,22 @@ class Scene{
 		let data = await fetch(endpoint).catch(e=>console.error(e));
 		let json = await data.json();
 		//console.log(json[1]);
-		
+		let streetNames = ['Meat Street', 'Feet Street', 'Abode Road','Pain Lane','Bike Turnpike','Hurt Court'];
+		streetNames.forEach(streetName=>{
+			let street;
+			do{
+				let horizontal = Math.random() > 0.5;
+				console.log(horizontal);
+				if(horizontal){
+					console.log('horizontal' + horizontal);
+					street = new Road(0,Math.floor(Math.random()*Scene.height),Scene.width,40);
+				} else {
+					console.log('vertical ' + horizontal);
+					street = new Road(Math.floor(Math.random()*Scene.width),0,40,Scene.height);
+				}
+			} while(this.roads.find(road=>this.collide(road,street)));
+			this.roads.push(street);
+		});
 		return [
 
 		]
