@@ -8,19 +8,14 @@ class Scene{
 	constructor(canvas){
 		this.canvas = canvas;
 		this.keys = [];
-		const keys = {
-			UP:[87,38],
-			DOWN:[83,40],
-			LEFT:[65,37],
-			RIGHT:[68,39]
-		}
+		this.roads = [];
 		this.tick = 0;
 		this.player = new Player(250,250,40,40);
 		this.ctx = canvas.getContext('2d');
-		canvas.addEventListener('keydown',e=>{
+		window.addEventListener('keydown',e=>{
 			this.keys[e.keyCode] = true;
 		});
-		canvas.addEventListener('keyup',e=>{
+		window.addEventListener('keyup',e=>{
 			this.keys[e.keyCode] = false;
 		});
 		this.interval = setInterval(()=>{
@@ -33,10 +28,9 @@ class Scene{
 		ctx.clearRect(0,0,canvas.width,canvas.height);
 		ctx.fillColor = 'black';
 		ctx.fillRect(canvas.width/2-player.width/2,canvas.height/2-player.height/2,player.width,player.height);
-		
 	}
 	update(){
-
+		this.player.move(this.keys);
 		this.tick++;
 	}
 	collide(o1,o2){
@@ -57,15 +51,63 @@ class Scene{
 
 }
 
+const Keys = {
+	UP:[87,38],
+	DOWN:[83,40],
+	LEFT:[65,37],
+	RIGHT:[68,39]
+}
+
+const Directions = {
+	DOWN:1,
+	UP:2,
+	LEFT:3,
+	RIGHT:4
+}
+
 class Player{
 	constructor(x,y,width,height){
 		this.x = x;
 		this.y = y;
+		this.speed = 5;
 		this.width = width;
 		this.height = height;
+		this.direction = Directions.DOWN;
 		//this.img = spriteManager.player;
 	}
 	move(keys){
+		let found = false;
+		Keys.UP.forEach(k=>{
+			if(keys[k] && !found){
+				found = true;
+				this.y -= this.speed;
+				this.direction = Directions.UP;
+			}
+		});
+		found = false;
+		Keys.DOWN.forEach(k=>{
+			if(keys[k] && !found){
+				found = true;
+				this.y += this.speed;
+				this.direction = Directions.DOWN;
+			}
+		});
+		found = false;
+		Keys.LEFT.forEach(k=>{
+			if(keys[k] && !found){
+				found = true;
+				this.x -= this.speed;
+				this.direction = Directions.LEFT;
+			}
+		});
+		found = false;
+		Keys.RIGHT.forEach(k=>{
+			if(keys[k] && !found){
+				found = true;
+				this.x += this.speed;
+				this.direction = Directions.RIGHT;
+			}
+		});
 
 	}
 
