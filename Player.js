@@ -12,14 +12,14 @@ class Player{
 		//this.img = spriteManager.player;
 	}
 	getSpeed(time){
-		return this.slimeTime < time?this.speed:this.speed/2;
+		return (this.slimeTime < time)?this.speed:this.speed/2;
 	}
 	move(keys,time){
 		let found = false;
 		Keys.UP.forEach(k=>{
 			if(keys[k] && !found){
 				found = true;
-				this.y -= this.speed;
+				this.y -= this.getSpeed(time);
 				this.direction = Directions.UP;
 			}
 		});
@@ -27,7 +27,7 @@ class Player{
 		Keys.DOWN.forEach(k=>{
 			if(keys[k] && !found){
 				found = true;
-				this.y += this.speed;
+				this.y += this.getSpeed(time);
 				this.direction = Directions.DOWN;
 			}
 		});
@@ -35,7 +35,7 @@ class Player{
 		Keys.LEFT.forEach(k=>{
 			if(keys[k] && !found){
 				found = true;
-				this.x -= this.speed;
+				this.x -= this.getSpeed(time);
 				this.direction = Directions.LEFT;
 			}
 		});
@@ -43,7 +43,7 @@ class Player{
 		Keys.RIGHT.forEach(k=>{
 			if(keys[k] && !found){
 				found = true;
-				this.x += this.speed;
+				this.x += this.getSpeed(time);
 				this.direction = Directions.RIGHT;
 			}
 		});

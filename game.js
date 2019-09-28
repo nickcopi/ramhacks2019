@@ -90,6 +90,7 @@ class Scene{
 			this.enemies.forEach(enemy=>{
 				enemy.move();
 			});
+			this.checkSliming();
 		} else {
 			this.menu.doInteract(this.keys,this);
 		}
@@ -124,8 +125,17 @@ class Scene{
 	}
 	generateMap(){
 		//let data = this.queryHouses();
-		for(let i = 0; i < 15;i++){
+		for(let i = 0; i < 20;i++){
 			this.enemies.push(new Enemy());
+		}
+	}
+	checkSliming(){
+		if(this.player.slimeTime < this.time){
+			let hit = false;
+			this.enemies.forEach(enemy=>{
+				if(this.collide(enemy,this.player)) hit = true;
+			});
+			if(hit) this.player.slimeTime = this.time + 60 * 3;
 		}
 	}
 	async queryHouses(){
@@ -133,7 +143,7 @@ class Scene{
 		let data = await fetch(endpoint).catch(e=>console.error(e));
 		let json = await data.json();
 		//console.log(json[1]);
-		let streetNames = ['Meat Street', 'Feet Street', 'Abode Road','Pain Lane','Bike Turnpike','Hurt Court'];
+		//let streetNames = ['Meat Street', 'Feet Street', 'Abode Road','Pain Lane','Bike Turnpike','Hurt Court'];
 		streetNames.forEach(streetName=>{
 			let street;
 			do{
