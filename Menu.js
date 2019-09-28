@@ -21,13 +21,13 @@ class Menu{
 				buy = true;
 			}
 		});
-		if(buy) return this.house.buy(scene.player);
+		if(buy) return this.house.buy(scene.player,scene.time);
 		let sell = false;
 		Keys.SELL.forEach(k=>{
 			if(keys[k]){
 				sell = true;
 			}
 		});
-		if(sell) return this.house.sell(scene.player);
+		if(sell) return this.house.sell(scene.player,scene.time);
 	}
 }

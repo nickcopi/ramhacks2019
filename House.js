@@ -10,20 +10,20 @@ class House{
 		this.address = address;
 		this.owned = false;
 	}
-	getCost(){
-		return this.cost;
+	getCost(time){
+		return Math.round(this.cost);
 	}
-	buy(player){
+	buy(player,time){
 		if(this.owned) return;
-		if(player.money >= this.getCost()){
-			player.money -= this.getCost();
+		if(player.money >= this.getCost(time)){
+			player.money -= this.getCost(time);
 			this.owned = true;
 
 		}
 	}
-	sell(player){
+	sell(player,time){
 		if(!this.owned) return;
-		player.money += this.getCost();
+		player.money += this.getCost(time);
 		this.owned = false;
 	}
 }

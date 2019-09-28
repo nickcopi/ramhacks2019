@@ -9,6 +9,7 @@ class Player{
 		this.direction = Directions.DOWN;
 		this.money = 200000;
 		this.slimeTime = 0;
+		this.streetName = "";
 		//this.img = spriteManager.player;
 	}
 	getSpeed(time){

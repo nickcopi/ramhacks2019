@@ -43,13 +43,15 @@ class Scene{
 			let adjusted = this.cameraOffset(road);
 			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,road.width,road.height);
 		});
-		ctx.font = '20px Arial';
-		ctx.fillText(`Money: $${player.money}`,1120,30);
 		ctx.fillStyle = 'green';
 		this.enemies.forEach(enemy=>{
 			let adjusted = this.cameraOffset(enemy);
 			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,enemy.width,enemy.height);
 		});
+		ctx.fillStyle = 'black';
+		ctx.font = '20px Arial';
+		ctx.fillText(`Money: $${player.money}`,1100,30);
+		ctx.fillText(player.streetName,1080 - ctx.measureText(player.streetName).width,30);
 		ctx.fillStyle = 'black';
 		ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
 		if(this.menu){
@@ -91,9 +93,15 @@ class Scene{
 				enemy.move();
 			});
 			this.checkSliming();
+			this.setYouStreetName();
 		} else {
 			this.menu.doInteract(this.keys,this);
 		}
+	}
+	setYouStreetName(){
+		let street = this.roads.find(road=>this.collide(road,this.player))
+		if(street) this.player.streetName = street.name;
+		else this.player.streetName = "";
 	}
 	collide(o1,o2){
 		return (o1.x < o2.x + o2.width && o1.x + o1.width > o2.x && o1.y < o2.y + o2.height && o1.y + o1.height > o2.y) && o1 !== o2;
@@ -186,7 +194,7 @@ class Scene{
 			do{
 				house = new House(Math.floor(Math.random()*Scene.width),Math.floor(Math.random()*Scene.height),100,100,entry.median_house_value,entry.streetName,entry.streetNumber);
 				
-			} while(this.roads.find(road=>this.collide(road,house)));
+			} while(this.roads.find(road=>this.collide(road,house ))|| this.houses.find(h=>this.collide(h,house)));
 			this.houses.push(house);
 			
 		});
