@@ -11,7 +11,7 @@ class House{
 		this.owned = false;
 	}
 	getCost(time){
-		return Math.round(this.cost) + (time%10 * this.address) + 3;
+		return Math.round(this.cost) + ((time%10) * this.address) + 3;
 	}
 	buy(player,time){
 		if(this.owned) return;

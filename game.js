@@ -16,7 +16,7 @@ class Scene{
 		this.menu;
 		this.houses = [];
 		this.time = 0;
-		this.player = new Player(250,250,40,40);
+		this.player = new Player(1000,1000,40,40);
 		this.ctx = canvas.getContext('2d');
 		window.addEventListener('keydown',e=>{
 			this.keys[e.keyCode] = true;
@@ -60,7 +60,12 @@ class Scene{
 		ctx.fillStyle = 'white';
 		ctx.font = '20px Arial';
 		ctx.fillText(`Money: $${player.money}`,1100,30);
-		ctx.fillText(player.streetName,1080 - ctx.measureText(player.streetName).width,30);
+		let streetDist = 1080 - ctx.measureText(player.streetName).width;
+		ctx.fillText(player.streetName,streetDist,30);
+		let owned = 0;
+		this.houses.forEach(h=>owned += h.owned?1:0);
+		ctx.fillText(`Houses Owned: ${owned}`,streetDist-180,30);
+		ctx.fillText(`Slimed Count: ${player.slimedCount}`,streetDist-360,30);
 		ctx.fillStyle = 'white';
 		ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
 		ctx.fillStyle = 'green';
@@ -156,7 +161,10 @@ class Scene{
 			this.enemies.forEach(enemy=>{
 				if(this.collide(enemy,this.player)) hit = true;
 			});
-			if(hit) this.player.slimeTime = this.time + 60 * 3;
+			if(hit) {
+				this.player.slimeTime = this.time + 60 * 3;
+				this.player.slimedCount++;
+			}
 		}
 	}
 	async queryHouses(){
