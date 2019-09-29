@@ -187,11 +187,12 @@ class Scene{
 			realJson.push(item);
 		}
 		let streetNames = realJson.map(m=>m.streetName);
+		streetNames = streetNames.filter((s,i)=>streetNames.indexOf(s) === i);
 		streetNames.forEach(streetName=>{
 			let street;
 			do{
 				let horizontal = Math.random() > 0.5;
-				console.log(horizontal);
+				//console.log(horizontal);
 				if(horizontal){
 					street = new Road(0,Math.floor(Math.random()*Scene.height),Scene.width,40,streetName,true);
 				} else {
