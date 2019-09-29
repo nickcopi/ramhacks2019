@@ -171,10 +171,8 @@ class Scene{
 		/*This will fetch() from our endpoint. For now, we return mock data :S*/
 		let data = await fetch(endpoint).catch(e=>console.error(e));
 		let json = await data.json();
-		console.log(json.length);
 		json = json.map(m=>({streetName:m.streetName,streetNumber:m.streetNumber,median_house_value:m.median_house_value}));
 		json = json.filter((m,i)=>json.indexOf(m) === i);
-		console.log(json.length);
 		//console.log(json[1]);
 		//let spot = Math.floor(Math.random()* (json.length - 20));
 		//json = json.slice(spot,spot+20);
@@ -186,6 +184,10 @@ class Scene{
 			} while(realJson.includes(item));
 			realJson.push(item);
 		}
+		realJson = realJson.map(m=>{
+			m.streetNumber = m.streetNumber?m.streetNumber:Math.floor(Math.random()*10000);
+			return m;
+		});
 		let streetNames = realJson.map(m=>m.streetName);
 		streetNames = streetNames.filter((s,i)=>streetNames.indexOf(s) === i);
 		streetNames.forEach(streetName=>{
