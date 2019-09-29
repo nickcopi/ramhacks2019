@@ -33,27 +33,40 @@ class Scene{
 	render(){
 		let {ctx,canvas,player} = this;
 		ctx.clearRect(0,0,canvas.width,canvas.height);
-		ctx.fillStyle = 'orange';
+		ctx.fillStyle = 'green';
+		ctx.fillRect(0,0,canvas.width,canvas.height);
 		this.houses.forEach(house=>{
 			let adjusted = this.cameraOffset(house);
-			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,house.width,house.height);
+			if(adjusted){
+				ctx.fillStyle = house.owned?'blue':'orange';
+				ctx.fillRect(adjusted.x,adjusted.y,house.width,house.height);
+			}
 		});
 		ctx.fillStyle = '#654321';
 		this.roads.forEach(road=>{
 			let adjusted = this.cameraOffset(road);
 			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,road.width,road.height);
 		});
-		ctx.fillStyle = 'green';
+		ctx.fillStyle = '#00FF00';
 		this.enemies.forEach(enemy=>{
 			let adjusted = this.cameraOffset(enemy);
-			if(adjusted) ctx.fillRect(adjusted.x,adjusted.y,enemy.width,enemy.height);
+			if(adjusted){ //ctx.fillRect(adjusted.x,adjusted.y,enemy.width,enemy.height);
+				ctx.beginPath();
+				ctx.arc(adjusted.x+enemy.width/2,adjusted.y+enemy.height/2,enemy.width/2,0,2*Math.PI);
+				ctx.fill();
+			}
+			
 		});
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = 'white';
 		ctx.font = '20px Arial';
 		ctx.fillText(`Money: $${player.money}`,1100,30);
 		ctx.fillText(player.streetName,1080 - ctx.measureText(player.streetName).width,30);
-		ctx.fillStyle = 'black';
+		ctx.fillStyle = 'white';
 		ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
+		ctx.fillStyle = 'green';
+		ctx.globalAlpha = 0.5;
+		if(player.slimeTime >= this.time) ctx.fillRect(canvas.width/2,canvas.height/2,player.width,player.height);
+		ctx.globalAlpha = 1;
 		if(this.menu){
 			ctx.globalAlpha = 0.5;
 			ctx.fillStyle = 'black';
